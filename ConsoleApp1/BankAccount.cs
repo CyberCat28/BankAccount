@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,8 +16,20 @@ namespace Classes
             Number = s_accountNumberSeed.ToString();
             s_accountNumberSeed++;
 
-            this.Owner = name;
-            MakeDeposit(initialBalance, DataTime.Now, "Initial balance");
+            Owner = name;
+            MakeDeposit(initialBalance, DateTime.Now, "Initial balance");
+        }
+        public string GetAccountHistory()
+        {
+            var report = new System.Text.StringBuilder();
+            decimal balance = 0;
+            report.AppendLine("Date\t\tAmount\tBalance\tNote");
+            foreach (var item in _allTransactions)
+            {
+                balance += item.Amount;
+                report.AppendLine($"{ item.Date.ToShortDateString()}\t{ item.Amount}\t{ balance}\t{ item.Notes}");
+            }
+            return report.ToString();
         }
         private List<Transaction> _allTransactions = new List<Transaction>();
         public string Number { get; }
